@@ -2,136 +2,64 @@
 import { ref, computed } from 'vue'
 import CardItem from './CardItem.vue'
 
-const props = defineProps({
-  produtos: Array
-})
-
+const props = defineProps({ produtos: Array })
+const emit = defineEmits(['deletar-item'])
 const categoriaAtiva = ref('TODAS')
 
-const produtosFiltrados = computed(() => {
-  if (categoriaAtiva.value === 'TODAS') {
-    return props.produtos
-  }
-  // Filtra ignorando maiúsculas/minúsculas para evitar erros
+const filtrados = computed(() => {
+  if (categoriaAtiva.value === 'TODAS') return props.produtos
   return props.produtos.filter(p => p.categoria.toUpperCase() === categoriaAtiva.value)
 })
 
-// 4. COMPUTED (Resumo): Faz as contas do Requisito 4 automaticamente
-const totalItens = computed(() => produtosFiltrados.value.length)
-
-const totalDisponiveis = computed(() => {
-  return produtosFiltrados.value.filter(p => p.disponivel).length
-})
-
-const precoMedio = computed(() => {
-  if (totalItens.value === 0) return 0
-  const soma = produtosFiltrados.value.reduce((acc, p) => acc + p.preco, 0)
-  return soma / totalItens.value
+const stats = computed(() => {
+  const total = filtrados.value.length
+  const disp = filtrados.value.filter(p => p.disponivel).length
+  const media = total ? filtrados.value.reduce((acc, p) => acc + p.preco, 0) / total : 0
+  return { total, disp, media }
 })
 </script>
 
 <template>
-  <section class="menu-container">
-    <header class="menu-header">
-      <h2>MENU</h2>
-      
-      <div class="categories">
-        <button 
-          v-for="cat in ['TODAS', 'LANCHE', 'BEBIDA', 'SOBREMESA']" 
-          :key="cat"
-          :class="{ active: categoriaAtiva === cat }"
-          @click="categoriaAtiva = cat"
-        >
-          {{ cat === 'TODAS' ? cat : cat + 'S' }}
-        </button>
-      </div>
-    </header>
-
-    <div class="grid-cardapio">
-      <CardItem 
-        v-for="item in produtosFiltrados" 
-        :key="item.id" 
-        :produto="item"
-      />
+  <section class="menu-side">
+    <h1 class="glow-title">MENU</h1>
+    
+    <div class="filter-bar">
+      <button v-for="c in ['TODAS', 'LANCHE', 'BEBIDA', 'SOBREMESA']" 
+        :key="c" :class="{ active: categoriaAtiva === c }" @click="categoriaAtiva = c">
+        {{ c }}
+      </button>
     </div>
 
-    <footer class="resumo">
-      <div class="card-resumo">
-        <p>Total Exibido: <strong>{{ totalItens }}</strong></p>
-        <p>Disponíveis: <strong>{{ totalDisponiveis }}</strong></p>
-        <p>Preço Médio: <strong>R$ {{ precoMedio.toFixed(2) }}</strong></p>
-      </div>
-    </footer>
+    <div class="grid">
+      <CardItem v-for="p in filtrados" :key="p.id" :produto="p" @remover="(id) => $emit('deletar-item', id)" />
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat"><span>TOTAL</span><strong>{{ stats.total }}</strong></div>
+      <div class="stat"><span>DISPONÍVEIS</span><strong>{{ stats.disp }}</strong></div>
+      <div class="stat"><span>MÉDIA</span><strong>R$ {{ stats.media.toFixed(2) }}</strong></div>
+    </div>
   </section>
 </template>
 
 <style scoped>
-.menu-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
+.menu-side { flex: 1; }
+.glow-title { font-size: 4rem; font-weight: 900; color: var(--orange); margin: 0 0 30px; text-shadow: 0 0 20px rgba(255, 77, 0, 0.3); }
 
-.menu-header h2 {
-  font-size: 2rem;
-  color: #ff4d00;
-  margin-bottom: 20px;
+.filter-bar { display: flex; gap: 10px; margin-bottom: 40px; }
+.filter-bar button {
+  background: transparent; border: 1px solid var(--orange); color: white;
+  padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s;
 }
+.filter-bar button:hover { background: rgba(255, 77, 0, 0.2); }
+.filter-bar button.active { background: var(--orange); box-shadow: 0 0 15px var(--orange); }
 
-.categories {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
-}
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
 
-.categories button {
-  background: transparent;
-  border: 1px solid #ff4d00;
-  color: white;
-  padding: 8px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: 0.3s;
-  font-weight: bold;
-  font-size: 0.8rem;
+.stats-bar {
+  margin-top: 50px; background: var(--card-bg); padding: 20px; border-radius: 20px;
+  display: flex; justify-content: space-around; border-bottom: 4px solid var(--orange);
 }
-
-/* Requisito 3: Destaque visual do botão ativo */
-.categories button.active {
-  background: #ff4d00;
-  box-shadow: 0 0 10px rgba(255, 77, 0, 0.5);
-}
-
-.grid-cardapio {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
-}
-
-.resumo {
-  margin-top: auto;
-  padding-top: 30px;
-}
-
-.card-resumo {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 15px;
-  border-radius: 10px;
-  display: flex;
-  justify-content: space-around;
-  border-left: 4px solid #ff4d00;
-}
-
-.card-resumo p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #ccc;
-}
-
-.card-resumo strong {
-  color: #fff;
-  display: block;
-  font-size: 1.1rem;
-}
+.stat span { display: block; font-size: 0.7rem; color: #888; margin-bottom: 5px; }
+.stat strong { font-size: 1.3rem; }
 </style>
