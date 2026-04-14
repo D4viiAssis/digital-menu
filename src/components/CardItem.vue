@@ -8,7 +8,9 @@ defineEmits(['remover'])
 
 <template>
   <div class="card" :class="{ off: !produto.disponivel }">
-    <button class="remove-btn" @click="$emit('remover', produto.id)">&times;</button>
+    <button class="remove-btn" @click="$emit('remover', produto.id)" title="Remover item">
+      <span class="icon">&times;</span>
+    </button>
     
     <div class="img-section">
       <div class="photo-circle">
@@ -19,52 +21,66 @@ defineEmits(['remover'])
     <div class="info">
       <span class="category-tag">{{ produto.categoria }}</span>
       <h3 class="food-name">{{ produto.nome }}</h3>
-      <p class="food-price">R$ {{ produto.preco.toFixed(2) }}</p>
+      <div class="price-container">
+        <p class="food-price">R$ {{ produto.preco.toFixed(2) }}</p>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
 .card {
-  background: var(--card-bg);
-  border-radius: 30px;
-  padding: 30px 15px;
+  background: rgba(22, 22, 37, 0.4);
+  backdrop-filter: blur(8px);
+  border-radius: 25px;
+  padding: 20px 15px;
   text-align: center;
   position: relative;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  /* Garantindo que o card seja menor como no design */
+  width: 100%;
+  max-width: 220px; 
+  margin: 0 auto;
 }
 
 .card:hover {
-  transform: translateY(-12px);
-  border-color: var(--orange);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  transform: translateY(-10px) scale(1.02);
+  border-color: rgba(255, 77, 0, 0.5);
+  background: rgba(22, 22, 37, 0.7);
+  box-shadow: 0 20px 15px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 77, 0, 0.1);
 }
 
 .off {
-  opacity: 0.3;
-  filter: grayscale(1);
+  opacity: 0.4;
+  filter: grayscale(0.8);
+  cursor: not-allowed;
+  text-decoration: line-through;
 }
 
 .img-section {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .photo-circle {
-  width: 140px;
-  height: 140px;
+  width: 110px; /* Reduzi o tamanho para o card ficar proporcional */
+  height: 110px;
   border-radius: 50%;
-  /* AQUI ESTÁ A MÁGICA: Borda real + Brilho (Glow) */
-  border: 4px solid var(--orange);
-  box-shadow: 0 0 15px rgba(255, 77, 0, 0.3);
-  
+  border: 3px solid var(--orange);
+  box-shadow: 0 0 20px rgba(255, 77, 0, 0.4);
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  background: #000;
+  transition: 0.3s;
+}
+
+.card:hover .photo-circle {
+  box-shadow: 0 0 30px rgba(255, 77, 0, 0.6);
+  transform: rotate(3deg);
 }
 
 .user-photo {
@@ -75,46 +91,65 @@ defineEmits(['remover'])
 
 .category-tag {
   color: var(--orange);
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
+  display: block;
+  margin-bottom: 5px;
 }
 
 .food-name {
-  margin: 8px 0;
-  font-size: 1.1rem;
+  margin: 5px 0;
+  font-size: 1rem;
   color: #fff;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price-container {
+  margin-top: 10px;
 }
 
 .food-price {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 900;
-  color: #ccc;
+  color: #ddd;
   margin: 0;
 }
 
+/* Botão de Excluir Premium com Degradê */
 .remove-btn {
   position: absolute;
-  top: 15px;
-  right: 15px;
-  background: rgba(255, 255, 255, 0.05);
-  border: none;
-  color: #ff4444;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  top: -10px;
+  right: -10px;
+  background: linear-gradient(135deg, #302c4f 0%, #4b4675 100%);
+  border: 2px solid #302c4f;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px; /* Estilo quadradinho arredondado igual a apps modernos */
   cursor: pointer;
-  font-size: 1.3rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 0.2s;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+  z-index: 5;
+}
+
+.remove-btn .icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  margin-top: -2px;
 }
 
 .remove-btn:hover {
-  background: #ff4444;
-  color: white;
+  transform: rotate(90deg) scale(1.1);
+  background: rgb(10, 22, 34);
+  box-shadow: 0 0 20px rgba(47, 77, 100, 0.5);
 }
 </style>
