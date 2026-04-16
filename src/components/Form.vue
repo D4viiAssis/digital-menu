@@ -1,73 +1,70 @@
 <script setup>
 import { ref } from 'vue'
-const emit = defineEmits(['enviar-item'])
+const emit = defineEmits(['send-item'])
 
-const nome = ref('')
-const preco = ref(0)
-const categoria = ref('')
-const disponivel = ref(true)
-const imagemSelecionada = ref(null)
+const name = ref('')
+const price = ref(0)
+const category = ref('')
+const available = ref(true)
+const selectedImage = ref(null)
 
 const handleFile = (e) => {
   const file = e.target.files[0]
   if (file) {
     const reader = new FileReader()
     reader.onload = (event) => {
-      imagemSelecionada.value = event.target.result
+      selectedImage.value = event.target.result
     }
     reader.readAsDataURL(file)
   }
 }
 
-const cadastrar = () => {
-  if (!nome.value || !imagemSelecionada.value) {
-    alert('Preencha o nome e selecione uma foto!')
+const register = () => {
+  if (!name.value || !selectedImage.value) {
+    alert('Fill in the name and select a photo!')
     return
   }
   
-  emit('enviar-item', {
-    nome: nome.value.toUpperCase(),
-    preco: preco.value,
-    categoria: categoria.value,
-    disponivel: disponivel.value,
-    imagem: imagemSelecionada.value
+  emit('send-item', {
+    name: name.value.toUpperCase(),
+    price: price.value,
+    category: category.value,
+    available: available.value,
+    image: selectedImage.value
   })
 
-  nome.value = ''
-  preco.value = 0
-  imagemSelecionada.value = null
+  name.value = ''
+  price.value = 0
+  category.value = ''
+  selectedImage.value = null
 }
 </script>
 
 <template>
   <aside class="form-container">
     <h2 class="form-title">REGISTER ITEM</h2>
-    
     <div class="input-group">
       <label>ITEM NAME</label>
-      <input v-model="nome" type="text" placeholder="Ex: BAM-BURGUER" class="dark-input">
+      <input v-model="name" type="text" placeholder="Ex: BAM-BURGER" class="dark-input">
     </div>
-
     <div class="input-group">
       <label>PHOTO (FROM PC)</label>
       <input type="file" @change="handleFile" accept="image/*" id="file-upload" hidden>
-      
       <label for="file-upload" class="upload-area">
-        <div v-if="imagemSelecionada" class="preview-container">
-          <img :src="imagemSelecionada" class="preview-img">
+        <div v-if="selectedImage" class="preview-container">
+          <img :src="selectedImage" class="preview-img">
         </div>
           <span class="plus-icon" v-else>+</span>
       </label>
     </div>
-
     <div class="row">
       <div class="input-group flex-1">
-        <label>PRICE (R$)</label>
-        <input v-model.number="preco" type="number" class="dark-input">
+        <label>PRICE ($)</label>
+        <input v-model.number="price" type="number" class="dark-input">
       </div>
       <div class="input-group flex-1">
         <label>CATEGORY</label>
-        <select v-model="categoria" class="dark-input">
+        <select v-model="category" class="dark-input">
           <option value="" disabled>SELECT</option>
           <option value="Lunch">LUNCH</option>
           <option value="beverage">BEVERAGE</option>
@@ -76,31 +73,43 @@ const cadastrar = () => {
         </select>
       </div>
     </div>
-
     <div class="checkbox-container">
       <label>AVAILABLE</label>
-      <input v-model="disponivel" type="checkbox" class="styled-checkbox">
+      <input v-model="available" type="checkbox" class="styled-checkbox">
     </div>
-
-    <button @click="cadastrar" class="btn-submit">SUBMIT</button>
+    <button @click="register" class="btn-submit">SUBMIT</button>
   </aside>
 </template>
 
 <style scoped>
 .form-container {
-  background: rgba(22, 22, 37, 0.8);
+  position: relative;
+  background: linear-gradient(to bottom, #ff4d00, #ff8c00);
   backdrop-filter: blur(15px);
-  padding: 30px;
+  padding: 33px;
   border-radius: 40px;
-  border: 1px solid rgba(255, 77, 0, 0.3);
   width: 450px;
   box-shadow: 0 20px 20px rgba(0, 0, 0, 0.4);
-  position: sticky;
   top: 40px;
 }
 
+.form-container::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  background: radial-gradient(circle at 0% 0%, #090812, #0a071a 40%, #000000 80%);
+  border-radius: inherit;
+  z-index: -1;
+}
+
 .form-title {
-  color: var(--orange);
+  background: linear-gradient(to bottom, #ff4d00, #ff8c00);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-size: 2.2rem;
   font-weight: 900;
   margin-bottom: 30px;
@@ -116,7 +125,7 @@ const cadastrar = () => {
 label {
   font-size: 0.65rem;
   font-weight: 800;
-  color: #666;
+  color: #ddd9d9;
   margin-bottom: 10px;
   letter-spacing: 1px;
 }

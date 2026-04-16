@@ -2,21 +2,21 @@
 import { ref, computed } from 'vue'
 import CardItem from './CardItem.vue'
 
-const props = defineProps({ produtos: Array })
-const emit = defineEmits(['deletar-item'])
-const categoriaAtiva = ref('ALL')
-const categorias = ['ALL', 'LUNCH', 'BEVERAGE', 'DESSERT', 'COMBO']
+const props = defineProps({ products: Array })
+const emit = defineEmits(['delete-item'])
+const activeCategory = ref('ALL')
+const categories = ['ALL', 'LUNCH', 'BEVERAGE', 'DESSERT', 'COMBO']
 
-const filtrados = computed(() => {
-  if (categoriaAtiva.value === 'ALL') return props.produtos
-  return props.produtos.filter(item => item.categoria.toUpperCase() === categoriaAtiva.value)
+const filteredItems = computed(() => {
+  if (activeCategory.value === 'ALL') return props.products
+  return props.products.filter(item => item.category.toUpperCase() === activeCategory.value)
 })
 
 const stats = computed(() => {
-  const total = filtrados.value.length
-  const disp = filtrados.value.filter(p => p.disponivel).length
-  const media = total ? filtrados.value.reduce((acc, p) => acc + p.preco, 0) / total : 0
-  return { total, disp, media }
+  const total = filteredItems.value.length
+  const available = filteredItems.value.filter(p => p.available).length
+  const average = total ? filteredItems.value.reduce((acc, p) => acc + p.price, 0) / total : 0
+  return { total, available, average }
 })
 </script>
 
@@ -24,28 +24,24 @@ const stats = computed(() => {
   <section class="menu-side">
     <header class="menu-header">
       <h1 class="glow-title">MENU</h1>
-      
       <div class="filter-bar">
-        <button v-for="category in categorias" 
-          :key="category" :class="{ active: categoriaAtiva === category }" @click="categoriaAtiva = category">
+        <button v-for="category in categories" 
+          :key="category" :class="{ active: activeCategory === category }" @click="activeCategory = category">
           {{ category }}
         </button>
       </div>
-
       <h2 class="category-indicator">
-        {{ categoriaAtiva === 'ALL' ? 'ALL' : categoriaAtiva }}
+        {{ activeCategory }}
       </h2>
     </header>
-
     <div class="grid">
       <CardItem 
-        v-for="item in filtrados" 
+        v-for="item in filteredItems" 
         :key="item.id" 
-        :produto="item" 
-        @remover="(id) => $emit('deletar-item', id)" 
+        :product="item" 
+        @remove="(id) => $emit('delete-item', id)" 
       />
     </div>
-
     <div class="stats-bar">
       <div class="stat">
         <span>TOTAL</span>
@@ -53,11 +49,11 @@ const stats = computed(() => {
       </div>
       <div class="stat">
         <span>AVAILABLE</span>
-        <strong>{{ stats.disp }}</strong>
+        <strong>{{ stats.available }}</strong>
       </div>
       <div class="stat">
         <span>AVERAGE PRICE</span>
-        <strong>R$ {{ stats.media.toFixed(2) }}</strong>
+        <strong>$ {{ stats.average.toFixed(2) }}</strong>
       </div>
     </div>
   </section>
@@ -74,7 +70,6 @@ const stats = computed(() => {
   font-size: 5rem; 
   font-weight: 900; 
   margin: 0;
-  /* Degradê no texto igual ao Canva */
   background: linear-gradient(to bottom, #ff4d00, #ff8c00);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -117,7 +112,6 @@ const stats = computed(() => {
   box-shadow: 0 0 20px rgba(255, 77, 0, 0.4); 
 }
 
-/* Grid com cards menores */
 .grid { 
   display: grid; 
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
@@ -133,7 +127,6 @@ const stats = computed(() => {
   border-radius: 15px;
   display: flex; 
   justify-content: space-around; 
-  /* Borda lateral estilosa do design */
   border-left: 5px solid var(--orange);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }

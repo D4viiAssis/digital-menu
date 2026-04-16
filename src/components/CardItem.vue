@@ -1,28 +1,26 @@
 <script setup>
 defineProps({
-  produto: Object
+  product: Object
 })
 
-defineEmits(['remover'])
+defineEmits(['remove'])
 </script>
 
 <template>
-  <div class="card" :class="{ off: !produto.disponivel }">
-    <button class="remove-btn" @click="$emit('remover', produto.id)" title="Remover item">
+  <div class="card" :class="{ off: !product.available }">
+    <button class="remove-btn" @click="$emit('remove', product.id)" title="Remove item">
       <span class="icon">&times;</span>
     </button>
-    
     <div class="img-section">
       <div class="photo-circle">
-        <img :src="produto.imagem" class="user-photo" alt="Lanche">
+        <img :src="product.image" class="user-photo" alt="Product">
       </div>
     </div>
-
     <div class="info">
-      <span class="category-tag">{{ produto.categoria }}</span>
-      <h3 class="food-name">{{ produto.nome }}</h3>
+      <span class="category-tag">{{ product.category }}</span>
+      <h3 class="food-name">{{ product.name }}</h3>
       <div class="price-container">
-        <p class="food-price">R$ {{ produto.preco.toFixed(2) }}</p>
+        <p class="food-price">$ {{ product.price.toFixed(2) }}</p>
       </div>
     </div>
   </div>
@@ -38,7 +36,6 @@ defineEmits(['remover'])
   position: relative;
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   border: 1px solid rgba(255, 255, 255, 0.03);
-  /* Garantindo que o card seja menor como no design */
   width: 100%;
   max-width: 220px; 
   margin: 0 auto;
@@ -65,7 +62,7 @@ defineEmits(['remover'])
 }
 
 .photo-circle {
-  width: 110px; /* Reduzi o tamanho para o card ficar proporcional */
+  width: 110px;
   height: 110px;
   border-radius: 50%;
   border: 3px solid var(--orange);
@@ -121,7 +118,6 @@ defineEmits(['remover'])
   margin: 0;
 }
 
-/* Botão de Excluir Premium com Degradê */
 .remove-btn {
   position: absolute;
   top: -10px;
@@ -131,7 +127,7 @@ defineEmits(['remover'])
   color: white;
   width: 32px;
   height: 32px;
-  border-radius: 10px; /* Estilo quadradinho arredondado igual a apps modernos */
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
